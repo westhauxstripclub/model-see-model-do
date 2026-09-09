@@ -1,119 +1,169 @@
 <p align="center">
-  <img src="docs/assets/banner.svg" alt="Attention Is Not All You Need — a causal study of sparse features in language models" width="100%" />
+  <img src="docs/assets/banner.svg" alt="Attention Is Not All You Need — causal sparse-feature interpretability" width="100%" />
 </p>
 
 <p align="center">
-  <strong>What activates a feature, what it predicts, and what it causes are different questions.</strong>
+  <strong>Separate what a representation correlates with from what it causally controls.</strong>
 </p>
 
 <p align="center">
-  <a href="paper/Manuscript.pdf">Read the manuscript</a> ·
-  <a href="docs/REPRODUCING.md">Reproduce the study</a> ·
-  <a href="replication/claim_ledger.csv">Inspect the claims</a> ·
-  <a href="publication/ARTIFACTS.md">Explore the evidence</a>
+  <a href="paper/Manuscript.md">Manuscript</a> ·
+  <a href="docs/METHODS.md">Methods</a> ·
+  <a href="docs/CLAIMS.md">Claim ledger guide</a> ·
+  <a href="docs/REPRODUCING.md">Reproduction</a> ·
+  <a href="STATUS.md">Live research status</a>
 </p>
 
 <p align="center">
-  <img alt="Study: exploratory" src="https://img.shields.io/badge/study-exploratory-C9AC79?style=flat-square&amp;labelColor=17242B" />
-  <img alt="Reference model: Gemma 2 2B" src="https://img.shields.io/badge/reference-Gemma_2_2B-B5CED0?style=flat-square&amp;labelColor=17242B" />
-  <img alt="Primary precision: FP32" src="https://img.shields.io/badge/precision-FP32-B5CED0?style=flat-square&amp;labelColor=17242B" />
-  <img alt="Replication: pending" src="https://img.shields.io/badge/replication-pending-C9AC79?style=flat-square&amp;labelColor=17242B" />
+  <img alt="study exploratory" src="https://img.shields.io/badge/study-exploratory-C9AC79?style=flat-square&labelColor=17242B" />
+  <img alt="reference model Gemma 2 2B" src="https://img.shields.io/badge/reference-Gemma%202%202B-B5CED0?style=flat-square&labelColor=17242B" />
+  <img alt="primary precision FP32" src="https://img.shields.io/badge/primary%20precision-FP32-B5CED0?style=flat-square&labelColor=17242B" />
+  <img alt="cross model replication in progress" src="https://img.shields.io/badge/replication-in%20progress-C9AC79?style=flat-square&labelColor=17242B" />
+  <a href="https://github.com/westhauxstripclub/attention-is-not-all-you-need/actions"><img alt="validation" src="https://img.shields.io/github/actions/workflow/status/westhauxstripclub/attention-is-not-all-you-need/validate.yml?branch=main&style=flat-square&label=artifact%20checks&labelColor=17242B" /></a>
 </p>
 
 ---
 
-## A lexical cue. A causal question.
+# Attention Is Not All You Need
 
-English chooses **a** or **an** by the sound that follows: *a university*, *an hour*. That small distinction offers a controlled way to ask how a language model uses internal representations to constrain its continuations.
+**A causal study of sparse autoencoder features, lexical constraints, and model-internal computation.**
 
-This project studies **Gemma Scope feature 12010**, a residual-stream SAE coordinate in **Gemma 2 2B**, at layer 24 in a 16k dictionary. An earlier phonology probe leaked its label through the article in the input. The revised study separates that failed inference from a different question: **holding the visible prompt fixed, does editing the feature change sound-compatible continuations?**
+English article choice provides a compact experimental system: *a university* but *an hour*. The visible orthography can conflict with the sound class that governs the article, which makes the domain useful for separating surface cues from latent constraints.
 
-The completed experiments provide evidence for a narrow, within-model causal effect. They also motivate a prospective replication program across Gemma 3, Llama, and Qwen. The title names the research project; it does not establish that attention is absent or unnecessary.
+This project asks four deliberately different questions:
 
-> **Research status · 8 September 2026**  
-> Both saved FP32 trial grids are complete and have been reaggregated from raw records. The data remain candidate-unreviewed and the study exploratory. New pretrained cross-model experiments, independent human adjudication, and public preregistration remain pending. This repository is a publication companion in preparation.
+1. **Activation** — when does an SAE feature fire naturally?
+2. **Prediction** — what information can be decoded from the representation without leakage?
+3. **Causation** — does intervening on the feature change sound-compatible continuation probabilities while the prompt stays fixed?
+4. **Mechanism** — through which positions, MLPs, and attention pathways does the effect propagate?
 
-## Evidence at a glance
+The central methodological lesson is simple: **feature interpretation should survive causal intervention, negative controls, alternative dictionaries, and independent-model replication—not just activation examples.**
 
-| Component | Available evidence | Interpretation |
-| :--- | :--- | :--- |
-| Original dictionary | **30,576 / 30,576** trial-condition records | Complete exploratory grid |
-| Alternate dictionary | **30,576 / 30,576** trial-condition records | Same-model dictionary robustness |
-| Intervention schedule | **26 conditions**, including 8 random and 4 matched SAE directions | Controls and diagnostics retained |
-| Native checks | Exact no-op differences of **0.0 nats** in the saved trial audit | Numerical check, not semantic isolation |
-| Cross-model extension | Code for Gemma 3, Llama 3.1, and Qwen3 | Pretrained runs not yet available |
+> **Status — 8 September 2026.** The Gemma 2 exploratory intervention grids have been completed and reaggregated. Same-model alternate-dictionary robustness is available. The candidate set has not yet passed independent human adjudication, and the confirmatory cross-model program is not complete. A Llama replication pilot has generated a 41,808-trial intervention schedule; those trials are not presented as completed evidence. See [`STATUS.md`](STATUS.md).
 
-The corrected [coverage audit](replication/outputs/legacy_audit/audit.json) verifies unique records, expected combinations, finite scores, and worker completion. The original `complete: false` report is retained: its checker mistakenly treated worker log files as directories.
+## Headline result
 
-### The measured intervention effect
+The reference experiment studies **Gemma Scope feature 12010** at layer 24 of Gemma 2 2B (16k residual-stream dictionary). A first phonology probe was invalid because the article in the prompt leaked the target label. That inference is retired.
 
-Natural feature removal produces the following spelling-balanced sound contrasts in held-out candidate families:
+The revised intervention keeps the visible prompt fixed and asks whether removing the naturally active feature changes the log-probability contrast between vowel-sound and consonant-sound continuations.
 
 | Dictionary | Neutral context, after **an** | Cued context, after **an** |
 | :--- | ---: | ---: |
-| Original | −14.4515 nats | −3.4118 nats |
-| Alternate | −12.8354 nats | −3.2845 nats |
+| Original | **−14.4515 nats** | **−3.4118 nats** |
+| Alternate same-layer dictionary | **−12.8354 nats** | **−3.2845 nats** |
 
-A negative value means removal reduces vowel-sound continuation scores relative to consonant-sound continuation scores. These are effects on summed continuation log probabilities, not accuracy percentages. The corresponding original-dictionary **a** estimates are approximately 7.75 × 10⁻⁷ and 1.02 × 10⁻⁸ nats; these near-zero results do not establish equivalence. See the [complete primary table](replication/outputs/legacy_audit/primary_effects_recomputed.csv), [all intervention estimates](replication/outputs/legacy_audit/all_effects_recomputed.csv), and [interpretation limits](docs/CLAIMS.md).
+Negative values mean feature removal lowers vowel-sound continuation scores relative to consonant-sound continuations. These are paired effects on summed continuation log probabilities—not classification accuracy, not a universal feature label, and not evidence that attention is unnecessary.
 
-## Four questions, four standards of evidence
+For the original dictionary, the corresponding **a** estimates are approximately `7.75e-7` and `1.02e-8` nats. They are practically tiny in this saved grid, but the current study does **not** claim formal equivalence.
 
-| Question | Measurement | What it does not establish by itself |
+## Evidence available now
+
+| Component | Current evidence | Interpretation |
 | :--- | :--- | :--- |
-| **What activates it?** | Natural SAE coefficients across contexts | A complete semantic definition |
-| **What can it predict?** | Probes with causally available information | Causal importance |
-| **What does it change?** | Paired interventions and continuation effects | A uniquely isolated semantic variable |
-| **Where does it act?** | Node restoration and controlled path tests | A unique natural circuit |
+| Original Gemma 2 dictionary | **30,576 / 30,576** intervention records | Complete exploratory grid |
+| Alternate Gemma 2 dictionary | **30,576 / 30,576** intervention records | Same-model dictionary robustness |
+| Intervention schedule | **26 conditions** | Includes 8 random and 4 matched SAE directions |
+| Numerical no-op audit | Exact **0.0 nats** differences | Implementation check only |
+| Llama extension | **41,808 scheduled trial IDs** in current pilot | Running / not yet a result |
+| Gemma 3 + Gemma Scope 2 | Prospective protocol | Not yet confirmatory evidence |
+| Qwen + Qwen-Scope | Prospective protocol | Not yet confirmatory evidence |
 
-The [claim ledger](replication/claim_ledger.csv) preserves supported narrow findings, nulls, retired inferences, and unrun hypotheses. In particular, this project does not claim a universal phonology neuron, a proven serial MLP circuit, absence of attention involvement, or a general falsification of vector symbolic architectures.
+The package records both positive and negative evidence in [`replication/claim_ledger.csv`](replication/claim_ledger.csv).
 
-## Start here
+## Why this is interesting
 
-**Read and inspect — no GPU needed.** Begin with the [manuscript](paper/Manuscript.pdf), the [current evidence guide](docs/CLAIMS.md), and the [publication artifact index](publication/ARTIFACTS.md). The manuscripts retain their historical working title and bytes; *Attention Is Not All You Need* is the repository title.
+Sparse autoencoders can produce features that look semantically clean, but interpretability requires more than a feature visualization. This project is designed around the gaps between **association, decodability, intervention, and mechanism**.
 
-**Check the research package.** Requires Python 3.10 or later; this verifies bytes and notebook payloads without downloading model weights.
+The research program therefore layers increasingly difficult tests:
+
+- leakage-resistant feature selection;
+- paired causal ablation and steering;
+- random-direction and matched-SAE controls;
+- alternate-dictionary robustness;
+- family-level resampling rather than treating lexical derivatives as independent;
+- position-specific causal tracing;
+- path-specific MLP mediation;
+- grouped-attention tests;
+- natural-text activation mapping;
+- independent feature selection in Gemma 3, Llama, and Qwen.
+
+This structure is intentionally falsifiable: a feature can be interpretable without being causal, causal without being unique, and model-specific without generalizing.
+
+## Research integrity decisions
+
+The repository keeps failed and incomplete hypotheses visible.
+
+| Claim | Current disposition |
+| :--- | :--- |
+| “The original probe shows phonology is encoded” | **Retired** — label leakage |
+| “Feature 12010 causally affects the held-out *an* contrast in Gemma 2” | **Supported narrowly** by the saved exploratory grids |
+| “The feature is a universal phonology neuron” | **Not supported** |
+| “The same semantic coordinate exists in every model” | **Not assumed** |
+| “MLPs form a proven serial causal circuit” | **Pending mechanistic tests** |
+| “Attention is unnecessary” | **Not claimed**; title is intentionally provocative |
+| “Population-level lexical generalization is established” | **Not established**; only four independent ordinary silent-h root families are currently available |
+
+See [`docs/CLAIMS.md`](docs/CLAIMS.md) for the exact standards of evidence.
+
+## 2026 replication context
+
+The replication program is built around three public interpretability ecosystems:
+
+- **Gemma Scope 2**: SAEs and transcoders across Gemma 3, including Matryoshka-trained SAEs and cross-layer/skip transcoders.
+- **Llama Scope**: layer- and sublayer-level SAE dictionaries for Llama-3.1-8B-Base.
+- **Qwen-Scope**: 2026 SAE releases for Qwen3/Qwen3.5 spanning dense and MoE models, with demonstrations of feature steering and model-development workflows.
+
+Every model selects its **own** candidate coordinate using discovery and selection partitions. Cross-model replication means replication of an experimental relationship, not forcing feature IDs to correspond.
+
+## Repository tour
+
+| Path | Contents |
+| :--- | :--- |
+| [`paper/Manuscript.md`](paper/Manuscript.md) | Current manuscript-style research narrative |
+| [`STATUS.md`](STATUS.md) | Completed, running, blocked, and planned work |
+| [`docs/METHODS.md`](docs/METHODS.md) | Experimental design and estimands |
+| [`docs/CLAIMS.md`](docs/CLAIMS.md) | Interpretation boundaries and evidence standards |
+| [`docs/LITERATURE.md`](docs/LITERATURE.md) | Current SAE / mechanistic-interpretability context |
+| [`docs/REPRODUCING.md`](docs/REPRODUCING.md) | How to validate and reproduce the package |
+| [`replication/protocol/PROTOCOL.md`](replication/protocol/PROTOCOL.md) | Prospective cross-model protocol |
+| [`replication/models/registry.json`](replication/models/registry.json) | Model/resource registry and empirical status |
+| [`replication/claim_ledger.csv`](replication/claim_ledger.csv) | Supported, null, retired, pending claims |
+| [`src/attention_not_all/`](src/attention_not_all/) | Small dependency-light analysis utilities |
+| [`tests/`](tests/) | Unit tests for family bootstrap, Holm correction, and audits |
+| [`publication/`](publication/) | Artifact inventory and publication gates |
+
+## Validate locally
+
+The repository includes dependency-light checks that do not download model weights:
 
 ```bash
-git clone https://github.com/westhauxstripclub/attention-is-not-all-you-need.git
-cd attention-is-not-all-you-need
+python -m pip install -e .
 python scripts/verify_artifacts.py
+pytest -q
 ```
 
-**Reproduce Gemma 2 on Kaggle.** Import [Gemma2_Reproduction.ipynb](notebooks/Gemma2_Reproduction.ipynb), choose T4 ×2, enable Internet, and supply `HF_TOKEN` through Kaggle Secrets after obtaining model access. The clean launcher starts with an FP32 smoke run; the larger stages are opt-in. The [executed notebook](replication/evidence/notebook1d8d67f12e.ipynb) is preserved separately with its outputs. Follow the [reproduction guide](docs/REPRODUCING.md) for complete runs and resumption.
+The analysis utilities intentionally operate on ordinary records/CSV-like data so statistical logic can be tested separately from GPU execution.
 
-**Continue the replication program.** Use [Kaggle_Interpretability_Extension.ipynb](replication/Kaggle_Interpretability_Extension.ipynb) with its GPU stages disabled by default. Complete the [prospective protocol](replication/protocol/PROTOCOL.md), independent reviews, and feature-selection requirements before confirmation.
+## Reproduce or extend
 
-## Repository map
+The GPU notebooks and raw evidence generated in Kaggle/RunPod are larger research artifacts and are **not fabricated here**. Before publication, they should be copied into the paths specified in [`publication/ARTIFACTS.md`](publication/ARTIFACTS.md), checksummed, and frozen. The exact remaining steps are tracked in [`publication/CHECKLIST.md`](publication/CHECKLIST.md).
 
-| Path | Purpose |
-| :--- | :--- |
-| [`paper/`](paper/) | Rebuilt manuscript in PDF, editable DOCX, and Markdown |
-| [`notebooks/`](notebooks/) | Clean, smoke-first Gemma 2 launcher |
-| [`experiments/gemma2/`](experiments/gemma2/) | Preserved original implementation, stimuli, audit fixtures, and manuscript sources |
-| [`replication/src/`](replication/src/) | Discovery, selection, intervention, path, attention, natural-text, and analysis code |
-| [`replication/data/`](replication/data/) | Candidate lexicon, blind review sheets, carriers, crossings, and corpus |
-| [`replication/evidence/`](replication/evidence/) | Unchanged raw results archive and executed notebook |
-| [`replication/outputs/`](replication/outputs/) | Recomputed legacy tables and historical software/execution records |
-| [`publication/`](publication/) | Artifact inventory, provenance, checksums, and submission checklist |
+For a fresh replication, start from [`replication/protocol/PROTOCOL.md`](replication/protocol/PROTOCOL.md). Do not use a pilot-selected feature as confirmatory evidence; discovery, selection, intervention, and analysis boundaries are explicit.
 
-## What comes next
+## Limitations that matter
 
-The prospective extension includes **137 lexical candidates**, **18 carriers**, **8 modifier forms**, **1,040 proposed crossings**, and **62 frozen natural-text documents**. These are proposed materials, not independently accepted samples or completed activation maps.
+- The completed Gemma 2 results are exploratory and within-model.
+- Alternate-dictionary robustness is not independent-model replication.
+- The rare orthography/phonology conflict cells impose a small number of independent lexical families.
+- SAE features are learned dictionary coordinates, not guaranteed ontological atoms.
+- Ablation can create off-manifold states; random and matched-feature controls reduce but do not eliminate this concern.
+- Near-zero effects are not equivalence tests.
+- A causal effect on continuation probabilities does not imply a unique circuit or a human-like phonological representation.
 
-| Model | SAE resource | Current empirical status |
-| :--- | :--- | :--- |
-| Gemma 3 1B pretrained | Gemma Scope 2 | Not run |
-| Llama 3.1 8B base | Llama Scope | Not run |
-| Qwen3 1.7B base | Qwen-Scope | Not run |
+## Citation
 
-Each model selects its own feature using separate discovery and selection partitions. Failed selections remain part of the record. Planned analyses include position-specific tracing, controlled MLP paths, grouped attention, and natural-text activation mapping. Exact resources and revisions are in the [model registry](replication/models/registry.json).
-
-A key constraint is linguistic: the ordinary consonant-spelling/vowel-sound cell currently contains only **four independent root families**—*hour, honor, honest, heir*. Derivatives do not create new independent families. The proposed population-inference gate is therefore unmet. See [remaining publication work](publication/CHECKLIST.md).
-
-## Citation and reuse
-
-Until a paper identifier is assigned, cite this repository with the exact commit used and access date. Bibliographic metadata is provided in [`CITATION.cff`](CITATION.cff); no DOI, acceptance, or public registration is implied. The original research has no assigned reuse license in this snapshot. Third-party notices and source attribution are retained; see [NOTICE.md](NOTICE.md).
+Until a public paper identifier or DOI exists, cite the repository with the exact commit hash and access date. Metadata is provided in [`CITATION.cff`](CITATION.cff).
 
 ---
 
-<p align="center"><sub>Measure the association. Test the intervention. Keep the falsification.</sub></p>
+<p align="center"><sub><strong>Measure the association. Test the intervention. Keep the falsification.</strong></sub></p>

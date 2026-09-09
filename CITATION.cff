@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use this research package, cite the exact repository commit and access date until a paper identifier is assigned."
+title: "Attention Is Not All You Need: Causal Sparse-Feature Analysis of Phonological Constraints in Language Models"
+type: software
+version: 0.1.0
+date-released: 2026-09-08
+repository-code: "https://github.com/westhauxstripclub/attention-is-not-all-you-need"
+abstract: "Research package for an exploratory causal sparse-autoencoder feature study in Gemma 2 and a prospective replication program across Gemma, Llama, and Qwen model families."
+keywords:
+  - mechanistic interpretability
+  - sparse autoencoders
+  - causal intervention
+  - language models
+  - representation learning
