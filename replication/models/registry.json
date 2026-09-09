@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "snapshot_date": "2026-09-08",
+  "models": [
+    {
+      "id": "gemma2_reference",
+      "model": "Gemma 2 2B",
+      "sae_resource": "Gemma Scope",
+      "role": "exploratory_reference",
+      "status": "completed_saved_grids",
+      "notes": "Original and alternate same-model dictionaries each have 30,576 saved trial-condition records. Exact model/SAE revisions must be copied from the frozen execution manifests before publication."
+    },
+    {
+      "id": "gemma3_replication",
+      "model": "Gemma 3",
+      "sae_resource": "Gemma Scope 2",
+      "role": "prospective_replication",
+      "status": "pending",
+      "notes": "Gemma Scope 2 provides SAEs and transcoders across Gemma 3. Freeze a specific base model and resource revision before confirmation."
+    },
+    {
+      "id": "llama31_replication",
+      "model": "Llama 3.1 8B Base",
+      "sae_resource": "Llama Scope",
+      "role": "independent_family_replication",
+      "status": "pilot_running",
+      "scheduled_trial_ids": 41808,
+      "notes": "Current pilot schedule count is execution metadata, not a completed empirical result."
+    },
+    {
+      "id": "qwen_replication",
+      "model": "Qwen3 or Qwen3.5 (freeze one before confirmation)",
+      "sae_resource": "Qwen-Scope",
+      "role": "independent_family_replication",
+      "status": "pending",
+      "notes": "Choose the exact model variant and SAE group before preregistration; do not change after seeing test effects."
+    }
+  ]
+}

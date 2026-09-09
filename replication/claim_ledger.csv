@@ -1,0 +1,13 @@
+claim_id,claim,status,evidence_scope,next_gate
+C001,"The original probe independently demonstrates phonological information",retired,"Probe input leaked the article/target cue","None; do not reuse as positive evidence"
+C002,"Gemma Scope feature 12010 changes the tested vowel-vs-consonant continuation contrast after an",supported_exploratory,"Gemma 2 2B original dictionary; 30,576-record saved grid","Independent adjudication and confirmatory replication"
+C003,"The intervention effect is robust to a second same-layer SAE dictionary",supported_exploratory,"Alternate dictionary; 30,576-record saved grid","Independent model family"
+C004,"The selected coordinate is a universal phonology neuron",not_supported,"No cross-model semantic identity evidence","Independent selection across model families"
+C005,"Near-zero effects after a establish equivalence",not_supported,"Small point estimates only","Predeclare equivalence margin and test"
+C006,"The behavior is mediated by a serial MLP circuit",pending,"Group/leave-one-out and path tests planned","Complete path-specific mediation"
+C007,"Attention is unnecessary for the effect",not_claimed,"Grouped-attention tests planned","Complete attention restoration/blocking tests"
+C008,"The effect generalizes to natural text",pending,"Frozen natural-text mapping planned","Run and audit natural-text stage"
+C009,"The effect replicates in Llama 3.1",running,"41,808 trial IDs scheduled in current pilot","Complete run, audit coverage, analyze frozen estimand"
+C010,"The effect replicates in Gemma 3",pending,"Gemma Scope 2 protocol prepared","Independent feature selection and confirmatory run"
+C011,"The effect replicates in Qwen",pending,"Qwen-Scope protocol prepared","Independent feature selection and confirmatory run"
+C012,"Population-level lexical generalization is established",blocked,"Only four ordinary independent silent-h root families in key cell","Scope/power review or expanded independently adjudicated families"
