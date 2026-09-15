@@ -1,7 +1,9 @@
 cff-version: 1.2.0
 message: "If you use this research package, cite the exact repository commit and access date until a paper identifier is assigned."
 title: "Attention Is Not All You Need: Causal Sparse-Feature Analysis of Phonological Constraints in Language Models"
-author: "Michael Forsythe"
+authors:
+- family-names: "Forsythe"
+  given-names: "Michael"
 type: software
 version: 0.1.0
 date-released: 2026-09-08
