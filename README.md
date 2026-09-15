@@ -146,8 +146,6 @@ The analysis utilities intentionally operate on ordinary records/CSV-like data s
 
 ## Reproduce or extend
 
-The GPU notebooks and raw evidence generated in Kaggle/RunPod are larger research artifacts and are **not fabricated here**. Before publication, they should be copied into the paths specified in [`publication/ARTIFACTS.md`](publication/ARTIFACTS.md), checksummed, and frozen. The exact remaining steps are tracked in [`publication/CHECKLIST.md`](publication/CHECKLIST.md).
-
 For a fresh replication, start from [`replication/protocol/PROTOCOL.md`](replication/protocol/PROTOCOL.md). Do not use a pilot-selected feature as confirmatory evidence; discovery, selection, intervention, and analysis boundaries are explicit.
 
 ## Limitations that matter
@@ -162,7 +160,7 @@ For a fresh replication, start from [`replication/protocol/PROTOCOL.md`](replica
 
 ## Citation
 
-Until a public paper identifier or DOI exists, cite the repository with the exact commit hash and access date. Metadata is provided in [`CITATION.cff`](CITATION.cff).
+Metadata is provided in [`CITATION.cff`](CITATION.cff).
 
 ---
 
